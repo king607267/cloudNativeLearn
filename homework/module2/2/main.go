@@ -24,11 +24,15 @@ func main() {
 }
 
 func serverLog(w http.ResponseWriter, r *http.Request) {
-	host, port, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		log.Fatal(err)
+	host := r.Header.Get("X-REAL-IP")
+	if host == "" {
+		log.Printf("X-REAL-IP is empty! ")
+		host, port, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("clientIp ip: %s, port is: %s return Code: %d", host, port, http.StatusOK)
 	}
-	log.Printf("clientIp ip: %s, port is: %s return Code: %d", host, port, http.StatusOK)
 	w.Header().Add("clientIp", host)
 	w.WriteHeader(http.StatusOK)
 }
