@@ -1,0 +1,13 @@
+FROM golang
+
+#暴露7000端口
+EXPOSE 7000
+
+#本地httpserver.go拷贝到镜像
+COPY httpserver.go ./
+
+#编译并删除不需要的源文件
+RUN go build httpserver.go && rm httpserver.go
+
+#运行
+CMD ["./httpserver"]
