@@ -1,0 +1,21 @@
+FROM golang AS build
+
+WORKDIR /httpserver/
+
+COPY . .
+
+ENV CGO_ENABLED=0
+ENV GO111MODULE=on
+ENV GOPROXY=https://goproxy.cn,direct
+
+RUN GOOS=linux go build -installsuffix cgo -o httpserver main.go
+
+FROM alpine
+
+COPY --from=build /httpserver/httpserver /httpserver/httpserver
+
+EXPOSE 7000
+
+ENV ENV localWORKDIR /httpserver/
+
+ENTRYPOINT ["./httpserver"]
