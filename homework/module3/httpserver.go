@@ -1,24 +1,49 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
+	mux := http.NewServeMux()
 	//Part1
-	http.HandleFunc("/readHeader", readHeader)
+	mux.HandleFunc("/readHeader", readHeader)
 	//Part2
-	http.HandleFunc("/readOSVer", readOSVer)
+	mux.HandleFunc("/readOSVer", readOSVer)
 	//Part3
-	http.HandleFunc("/serverLog", serverLog)
+	mux.HandleFunc("/serverLog", serverLog)
 	//Part4
-	http.HandleFunc("/healthz", healthz)
-	err := http.ListenAndServe(":7000", nil)
-	if err != nil {
-		log.Fatal(err)
+	mux.HandleFunc("/healthz", healthz)
+
+	server := &http.Server{
+		Addr:    ":7000",
+		Handler: mux,
+	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGALRM, syscall.SIGINT, syscall.SIGHUP)
+
+	go func() {
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+			// it is fine to use Fatal here because it is not main gorutine
+			log.Fatalf("HTTP server ListenAndServe: %v", err)
+		}
+	}()
+
+	<-c
+	gracefulCtx, cancelShutdown := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancelShutdown()
+	if err := server.Shutdown(gracefulCtx); nil != err {
+		log.Fatalf("server shutdown failed, err: %v\n", err)
+	} else {
+		log.Printf("gracefully stopped\n")
 	}
 
 }
