@@ -6,7 +6,7 @@ spec:
   terminationGracePeriodSeconds: 60
   containers:
     - name: httpserver
-      image: king607267/cnl-httpserver:v1.0
+      image: king607267/cnl-httpserver:v3.0
       readinessProbe:
         exec:
           command:
@@ -14,3 +14,10 @@ spec:
             - localhost:7000/healthz
         initialDelaySeconds: 20
         periodSeconds: 5
+      resources:
+        limits:
+          cpu: 500m
+          memory: 200Mi
+        requests:
+          cpu: 100m
+          memory: 100Mi
