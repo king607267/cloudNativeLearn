@@ -28,7 +28,7 @@ func main() {
 	}
 
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGALRM, syscall.SIGINT, syscall.SIGHUP)
+	signal.Notify(c, syscall.SIGALRM, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
 	go func() {
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {

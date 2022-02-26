@@ -1,6 +1,6 @@
 #!/bin/bash
 #cnl = cloudNativeLearn
-sudo docker build  -t my/cnl-httpserver:v1.0 -f Dockerfile-httpserver .
+sudo docker build  -t my/cnl-httpserver:v1.0 -f Dockerfile-httpserver-multiple .
 
 sudo docker run --name httpserver -i -p 7000:7000 -d my/cnl-httpserver:v1.0
 
