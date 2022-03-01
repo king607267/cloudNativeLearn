@@ -1,0 +1,10 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: httpserver-ingress
+spec:
+  defaultBackend:
+    service:
+      name: httpserver-service
+      port:
+        number: 7000
