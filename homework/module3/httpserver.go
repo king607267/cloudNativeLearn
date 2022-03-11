@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net"
 	"net/http"
@@ -21,6 +22,8 @@ func main() {
 	mux.HandleFunc("/serverLog", serverLog)
 	//Part4
 	mux.HandleFunc("/healthz", healthz)
+
+	mux.HandleFunc("/metrics", metrics)
 
 	server := &http.Server{
 		Addr:    ":7000",
@@ -75,4 +78,8 @@ func readHeader(w http.ResponseWriter, r *http.Request) {
 
 func healthz(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
+}
+
+func metrics(w http.ResponseWriter, r *http.Request) {
+	promhttp.Handler().ServeHTTP(w, r)
 }

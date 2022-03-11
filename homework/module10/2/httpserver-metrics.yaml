@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpserver-metrics
+spec:
+  replicas: 1
+  selector:
+   matchLabels:
+    app: httpserver-metrics
+  template:
+    metadata:
+      name: httpserver-metrics
+      labels:
+        app: httpserver-metrics
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "7000"
+    spec:
+      #等待容器响应 syscall.SIGTERM
+      terminationGracePeriodSeconds: 40
+      containers:
+        - name: httpserver-metrics
+          image: king607267/cnl-httpserver:v1.0-metrics
+          ports:
+            - containerPort: 7000
+          readinessProbe:
+            httpGet:
+              port: 7000
+              path: /healthz
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: 500m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi

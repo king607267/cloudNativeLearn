@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net"
@@ -49,6 +50,10 @@ func main() {
 		log.Printf("gracefully stopped\n")
 	}
 
+}
+
+func reg(namespace string, help string) *prometheus.HistogramVec {
+	return prometheus.NewHistogramVec(prometheus.HistogramOpts{Namespace: namespace, Name: "execution_latency_seconds", Help: help, Buckets: prometheus.ExponentialBuckets(0.001, 2, 15)}, []string{"step"})
 }
 
 func serverLog(w http.ResponseWriter, r *http.Request) {
