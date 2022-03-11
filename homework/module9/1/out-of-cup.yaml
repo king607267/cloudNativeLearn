@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: outofcpu
+spec:
+  nodeName: wangjueming-k8s-node1
+  containers:
+    - name: outofcpu
+      image: nginx
+      resources:
+        requests:
+          cpu: "5"
+        limits:
+          cpu: "5"
