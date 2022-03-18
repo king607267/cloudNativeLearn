@@ -1,10 +1,13 @@
 package main
 
 import (
+	metrics3 "cloudNativeLearn/homework/module10/2/metrics"
 	"context"
+	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
@@ -14,6 +17,7 @@ import (
 )
 
 func main() {
+	metrics3.Register()
 	mux := http.NewServeMux()
 	//Part1
 	mux.HandleFunc("/readHeader", readHeader)
@@ -25,6 +29,9 @@ func main() {
 	mux.HandleFunc("/healthz", healthz)
 
 	mux.HandleFunc("/metrics", metrics)
+
+	//metrics prometheus use grafana
+	mux.HandleFunc("/metrics2", metrics2)
 
 	server := &http.Server{
 		Addr:    ":7000",
@@ -49,6 +56,15 @@ func main() {
 	} else {
 		log.Printf("gracefully stopped\n")
 	}
+
+}
+
+func metrics2(w http.ResponseWriter, r *http.Request) {
+	timer := metrics3.NewTimer()
+	defer timer.ObserveTotal()
+	randInt := rand.Intn(2000)
+	time.Sleep(time.Millisecond * time.Duration(randInt))
+	w.Write([]byte(fmt.Sprintf("<h1>%d<h1>", randInt)))
 
 }
 
