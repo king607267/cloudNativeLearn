@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-httpserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-httpserver
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+      labels:
+        app: simple-httpserver
+    spec:
+      containers:
+        - name: simple-httpserver
+          imagePullPolicy: Always
+          image: king607267/httpserver:v2.0-metrics
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-httpserver
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: simple-httpserver
